@@ -61,6 +61,7 @@ def secure_acceptor(s,host,port):
                 s.connect((host,port))
                 validataion_s = validate_socket(s)
                 if validataion_s == True:
+                    print("connected with ",host)
                     data_processing(s)
                     break
                 else:
@@ -143,9 +144,9 @@ def data_processing(conn):
         return receiver_head()
     def read_file(file_name):
         arr = []
-        file = open(file_name,"r")
-        for i in file.readlines():
-            arr.append(i)
+        file = open(file_name,"rb")
+        arr = file.readlines()
+            
         file.close()
         del file
         return arr
@@ -158,8 +159,26 @@ def data_processing(conn):
         del file
     while True:
         data_to_send = input()
+        if data_to_send == "filetransferinitiate":
+            type_of_transfer = input("Enter type of transfer(from,to)(target,u): ")
+            type_of_transfer = type_of_transfer.split(",")
+            if type_of_transfer[0] == "target":
+                file_name = input("Enter filename with path: ")
+                sender(s,"filetransferfromu78349789")
+                sender(s,file_name)
+                data = receiver(s)
+                data = literal_eval(data)
+                write_file("downloaded_data",data)
+            elif type_of_transfer[1] == "target":
+                file_names = input("Enter filename with path to send data: ")
+                sender(s,"filetransferfromus789789")
+                data_f = read_file(file_names)
+                data_f = str(data_f)
+                sender(conn,file_names)
+                sender(conn,data_f)
         sender(s,data_to_send)
         print(receiver(conn).decode(),end="")
-ip_ad = '127.0.0.1'
+
+ip_ad = str(input("Enter ip_address: "))
 s = create_socket()
 secure_acceptor(s,ip_ad,7867)
