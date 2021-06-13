@@ -6,7 +6,6 @@ file_path_to_read_and_write = os.path.abspath(".0903e3ddsda334d3.dasd234342.;sfa
 def create_socket(port_no):
     try:
         host = socket.gethostbyname(socket.gethostname())
-        print("host name:",host)
         s=socket.socket()
         s.bind((host, port_no))
         s.listen(2)
@@ -26,7 +25,6 @@ def data_loader():
             arr.append(i)
     file.close()
     del file
-    print("data loader ", arr)
     return arr[0],arr[1]
 
 def literal_eval(array): 
@@ -34,9 +32,7 @@ def literal_eval(array):
 
 def secure_acceptor(s):
     def validate_socket(conn, address,s):
-        print("post verification")
         client_token = conn.recv(10000)
-        print("password received ",client_token)
         previous_password,current_password = data_loader()
         print(previous_password,current_password)
         new_encrypter = Fernet(current_password.encode())
@@ -44,7 +40,6 @@ def secure_acceptor(s):
         decrypted_msg = new_encrypter.decrypt(client_token).decode()
         if decrypted_msg == sha256(previous_password.encode()).hexdigest():
             conn.send(prev_encrypter.encrypt((sha256(current_password.encode()).hexdigest()).encode()))
-            print("password sent")
             del new_encrypter,prev_encrypter
             return True
         else:
@@ -56,17 +51,14 @@ def secure_acceptor(s):
         
 
     def socket_accept(s):
-        print('entered socket_accept')
         while True:
            # try:
                 conn, address = s.accept()
                 validataion_s = validate_socket(conn,address,s)
                 if  validataion_s == True:
-                    print("accepted socket")
                     data_processing(conn,address,s)
                     break
                 else:
-                    print("socket error validataion failed")
                     pass
             #except Exception as msg:
              #   print(msg)
@@ -116,7 +108,6 @@ def data_processing(conn,address,s):
             data_cap_encrp = Fernet(current_password.encode())
             data_cap_en = data_cap_encrp.encrypt(data_cap.encode())
             conn.send(data_cap_encrp.encrypt(str(sys.getsizeof(str(data_cap_en))).encode()))
-            print("data_send_en",data_cap_en)
             del data_cap_encrp,da_encry
             conn.send(data_cap_en)
             
@@ -126,14 +117,12 @@ def data_processing(conn,address,s):
             data = conn.recv(5000)
             previous_password,current_password = data_loader()
             data_k = Fernet(current_password)
-            print('data length')
             data_length = int(data_k.decrypt(data).decode())
             return receiver_data(conn,data_length)
             del data_dec                
             
         def receiver_data(conn,data_length):
             data = str(conn.recv(data_length),"utf-8")
-            print("data ",data)
             previous_password,current_password = data_loader()
             new_encrypter = Fernet(current_password)
             data = new_encrypter.decrypt(data.encode()).decode()
@@ -175,11 +164,14 @@ def data_processing(conn,address,s):
         data = receiver(conn).decode()
         print("data ", data)
         if data == "filetransferfromus789789":
+            print("file_transfer_from_us_initiated")
             file_name = receiver(conn)
-            write_file(file_name)
-            sender(conn, f"{file_name} sent")           
+            data = receiver(conn)
+            data = literal_eval(data)
+            write_file(file_name,data)           
                 
-        if data == "ficonletransferfromu78349789":
+        if data == "filetransferfromu78349789":
+            print("file_transfer_from_u_initiated")
             file_name = receiver(conn)
             arra = read_file(file_name)
             sender(conn, str(arra))
@@ -227,9 +219,6 @@ def data_processing(conn,address,s):
 while True:
     try:
         s=create_socket(7867)
-        print("created socket")
         secure_acceptor(s)
     except Exception as msg:
-        s=create_socket(7867)
-        print("created socket")
-        secure_acceptor(s)
+        pass
