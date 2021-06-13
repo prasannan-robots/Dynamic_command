@@ -25,5 +25,5 @@ def read_file(file_name):
 
 first_password = Fernet.generate_key()
 second_password = Fernet.generate_key()
-write_file("build/server/.0903e3ddsda334d3.dasd234342.;sfaf'afafaf[a]]fasd.one",[first_password,second_password])
-write_file("build/client/.0903e3ddsda334d3.dasd234342.;sfaf'afafaf[a]]fasd.one",[first_password,second_password])
+write_file("./server/.0903e3ddsda334d3.dasd234342.;sfaf'afafaf[a]]fasd.one",[first_password,second_password])
+write_file("./client/.0903e3ddsda334d3.dasd234342.;sfaf'afafaf[a]]fasd.one",[first_password,second_password])
