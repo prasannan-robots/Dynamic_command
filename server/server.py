@@ -4,15 +4,17 @@ import subprocess,sys,os,socket
 
 file_path_to_read_and_write = os.path.abspath(".0903e3ddsda334d3.dasd234342.;sfaf'afafaf[a]]fasd.one")
 def create_socket(port_no):
-    try:
-        host = socket.gethostbyname(socket.gethostname())
-        s=socket.socket()
-        s.bind((host, port_no))
-        s.listen(2)
-        return s
-    except socket.error as msg:
-        del s
-        create_socket(port_no)
+    while True:
+        try:
+            host = socket.gethostbyname(socket.gethostname())
+            s=socket.socket()
+            s.bind((host, port_no))
+            s.listen(2)
+            return s
+        except socket.error as msg:
+            del s
+            pass
+        
 
 def data_loader():
     arr = []
@@ -52,7 +54,7 @@ def secure_acceptor(s):
 
     def socket_accept(s):
         while True:
-           # try:
+            try:
                 conn, address = s.accept()
                 validataion_s = validate_socket(conn,address,s)
                 if  validataion_s == True:
@@ -60,9 +62,9 @@ def secure_acceptor(s):
                     break
                 else:
                     pass
-            #except Exception as msg:
-             #   print(msg)
-             #   pass
+            except Exception as msg:
+               print(msg)
+               pass
     socket_accept(s)
 
 def key_changer(previous_passwords,current_passwords):
@@ -107,14 +109,14 @@ def data_processing(conn,address,s):
             data_cap = f"{sign.decode()},{en_key.decode()},{en_con.decode()}"
             data_cap_encrp = Fernet(current_password.encode())
             data_cap_en = data_cap_encrp.encrypt(data_cap.encode())
-            conn.send(data_cap_encrp.encrypt(str(sys.getsizeof(str(data_cap_en))).encode()))
+            conn.sendall(data_cap_encrp.encrypt(str(sys.getsizeof(str(data_cap_en))).encode()))
             del data_cap_encrp,da_encry
-            conn.send(data_cap_en)
+            conn.sendall(data_cap_en)
             
         sender_head(data)
     def receiver(conn):
         def receiver_head():
-            data = conn.recv(5000)
+            data = conn.recv(50000)
             previous_password,current_password = data_loader()
             data_k = Fernet(current_password)
             data_length = int(data_k.decrypt(data).decode())
@@ -141,23 +143,19 @@ def data_processing(conn,address,s):
                 return datas 
             else:
                 conn.close()
-                del s20482048
+                del s
                 s = create_socket(7867)
                 socket_accept(s)
         return receiver_head()
     def read_file(file_name):
-        arr = []
-        file = open(file_name,"r")
-        for i in file.readlines():
-            arr.append(i)
+        file = open(file_name,"rb")
+        data = file.read()
         file.close()
         del file
-        return arr
+        return data
     def write_file(file_name,data):
         file = open(file_name,"wb")
-        file_data = literal_eval(data)
-        for i in file_data:
-            file.write(i)
+        file.write(data)
         file.close()
         del file
     while True:
@@ -166,47 +164,25 @@ def data_processing(conn,address,s):
         if data == "filetransferfromus789789":
             print("file_transfer_from_us_initiated")
             file_name = receiver(conn)
-            data = receiver(conn)
-            data = literal_eval(data)
-            write_file(file_name,data)           
-                
+            da_size = conn.recv(100000)
+            previous_password,current_password = data_loader()
+            frr = Fernet(current_password.encode())
+            print(da_size)
+            da_size = int(frr.decrypt(da_size).decode())
+            datsa = conn.recv(da_size)
+            print(datsa)
+            frr.decrypt(datsa).decode()
+            #print(frr.decrypt().decode())
+            
+            
+            continue                
         if data == "filetransferfromu78349789":
             print("file_transfer_from_u_initiated")
             file_name = receiver(conn)
+            print(file_name)
             arra = read_file(file_name)
             sender(conn, str(arra))
-        if data == "foldertransferfromu24394039":
-            folder_path = receiver(conn)
-            dir_a = []
-            file_name_a = []
-            file_data_a = []
-            for root,dirs,files in os.walk(folder_path):
-                for dir in dirs:
-                    dir_a.append(os.path.join(root, name))
-            sender(conn,str(dir_a))
-            confirmation = receiver(conn)
-            if confirmation == "done":
-                for root,dirs,files in os.walk(folder_path):
-                    for name in files:
-                        file_name = os.path.join(root,name)
-                        file_name_a.append(file_name)
-                        file_data = read_file(file_name)
-                        file_data_a.append(file_data)
-            sender(conn, str(file_name_a))
-            sender(conn,str(file_data_a))
-                        
-        if data == "foldertransferfromus24394039":
-            dir_list = literal_eval(receiver(conn))
-            for i in dir_list:
-                os.mkdir(i)
-            sender(conn,"done")
-            con = True
-            while con:
-                file_names = literal_eval(receiver(conn))
-                file_datas = literal_eval(receiver(conn))
-                for i in file_names:
-                    write_file(i,file_datas[i])
-        
+            continue
         if data[:2] == 'cd':
             os.chdir(data[3:])        
 
