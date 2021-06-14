@@ -61,7 +61,6 @@ def secure_acceptor(s,host,port):
                 s.connect((host,port))
                 validataion_s = validate_socket(s)
                 if validataion_s == True:
-                    print("connected with ",host)
                     data_processing(s)
                     break
                 else:
@@ -104,6 +103,7 @@ def data_processing(conn):
             
             data_cap_encrp = Fernet(current_password.encode())
             data_cap_en = data_cap_encrp.encrypt(data_cap.encode())
+            print("data size", sys.getsizeof(str(data_cap_en)))
             conn.send(data_cap_encrp.encrypt(str(sys.getsizeof(str(data_cap_en))).encode()))
             conn.send(data_cap_en)
             del data_cap_encrp,da_encry
@@ -113,7 +113,7 @@ def data_processing(conn):
             
             previous_password,current_password = data_loader()
             data_k = Fernet(current_password)
-            data = str(conn.recv(2048),"utf-8")
+            data = str(conn.recv(50000),"utf-8")
             data_length = int(data_k.decrypt(data.encode()).decode())
             data = str(conn.recv(data_length),"utf-8")
             del data_k
@@ -138,12 +138,11 @@ def data_processing(conn):
                 return datas 
             else:
                 conn.close()
-                del s20482048
+                del s
                 s = create_socket(7867)
                 socket_accept(s)
         return receiver_head()
     def read_file(file_name):
-        arr = []
         file = open(file_name,"rb")
         arr = file.readlines()
             
@@ -153,10 +152,10 @@ def data_processing(conn):
     def write_file(file_name,data):
         file = open(file_name,"wb")
         file_data = literal_eval(data)
-        for i in file_data:
-            file.write(i)
+        file.write(file_data)
         file.close()
         del file
+    print("connected with target")
     while True:
         data_to_send = input()
         if data_to_send == "filetransferinitiate":
@@ -167,18 +166,30 @@ def data_processing(conn):
                 sender(s,"filetransferfromu78349789")
                 sender(s,file_name)
                 data = receiver(s)
+                print(data)
                 data = literal_eval(data)
                 write_file("downloaded_data",data)
             elif type_of_transfer[1] == "target":
                 file_names = input("Enter filename with path to send data: ")
-                sender(s,"filetransferfromus789789")
                 data_f = read_file(file_names)
+                sender(s,"filetransferfromus789789")
                 data_f = str(data_f)
-                sender(conn,file_names)
-                sender(conn,data_f)
+                print("Transferring filename")
+                sender(s,file_names)
+                print("Transferring...filedata")
+                previous_password,current_password = data_loader()
+                curr = Fernet(current_password.encode())
+                s.send(curr.encrypt(str(sys.getsizeof(curr.encrypt(data_f.encode()))).encode()))
+                s.send(curr.encrypt(data_f.encode()))
+                print("sentdata")
+                continue
         sender(s,data_to_send)
         print(receiver(conn).decode(),end="")
 
 ip_ad = str(input("Enter ip_address: "))
 s = create_socket()
-secure_acceptor(s,ip_ad,7867)
+while True:
+    try:
+        secure_acceptor(s,ip_ad,7867)
+    except ConnectionRefusedError():
+        pass
