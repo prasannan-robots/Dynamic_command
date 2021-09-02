@@ -4,8 +4,8 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="dynocom",                     # This is the name of the package
-    version="0.0.2",                        # The initial release version
+    name="dynamic_enc",                     # This is the name of the package
+    version="0.0.1",                        # The initial release version
     author="prasannan-robots",                     # Full name of the author
     description="Dynamic encryption key changer for security",
     long_description=long_description,      # Long description read from the the readme file
@@ -17,7 +17,7 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],                                      # Information to filter the project on PyPi website
     python_requires='>=3.6',                # Minimum version requirement of the package
-    py_modules=["dynocom"],             # Name of the python package
-    package_dir={'':'DYNAMIC_COMMAND/src'},     # Directory of the source code of the package
+    py_modules=["dynamic_enc"],             # Name of the python package
+    package_dir={'':'dynamic_enc/src'},     # Directory of the source code of the package
     install_requires=['cryptography']                     # Install other dependencies if any
 )
